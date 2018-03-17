@@ -23,15 +23,31 @@ import numpy as np
 from PySpice.Unit import *
 
 
-class Parser(object):
-    instance = None
-    NUM_CHARACTERS = frozenset("0123456789-e.")
+class AllUnits(object):
+    F = 'F'
+    A = 'A'
+    R = 'R'
+    W = 'W'
+    H = 'H'
+    C = 'C'
+    K = 'K'
+    Hz = 'Hz'
+    V = 'V'
+    J = 'J'
+    S = 'S'
     UNITS = [['F'], ['A'], ['Ω', 'Ohm', 'R'], ['W'], ['H'], ['C'], ['K'],
              ['Hz'], ['V'], ['J'], ['S']]
 
     PYSPICE_UNIT_MAP = {'F': u_F, 'A': u_A, 'Ω': u_Ohm, 'Ohm': u_Ohm, 'R': u_Ohm,
                         'W': u_W, 'H': u_H, 'C': u_C, 'K': u_K, 'Hz': u_Hz, 'V': u_V,
                         'J': u_J, 'S': u_S}
+
+
+class Parser(object):
+    instance = None
+    NUM_CHARACTERS = frozenset("0123456789-e.")
+    UNITS = AllUnits.UNITS
+    PYSPICE_UNIT_MAP = AllUnits.PYSPICE_UNIT_MAP
 
     UNIT_PREFIXES = "Δ°"
     SUFFICES = [["y"], ["z"], ["a"], ["f"], ["p"], ["n"], ["µ", "u"], ["m"], ['', 'R'],
@@ -197,7 +213,7 @@ class Parser(object):
         # Pre-multiply the value
         v = v * (10.0 ** -(suffixMapIdx * 3))
         # Delegate the rest of the task to the helper
-        return _formatWithSuffix(v, self.exp_suffix_map[suffixMapIdx] + unit_symbol)
+        return Parser._format_with_suffix(v, self.exp_suffix_map[suffixMapIdx] + unit_symbol)
 
     def auto_suffix_1d(self, arr):
         """
@@ -247,42 +263,37 @@ class Parser(object):
         else:
             return s
 
+    @staticmethod
+    def _format_with_suffix(v, suffix=""):
+        """
+        Format a given value with a given suffix.
+        This helper function formats the value to 3 visible digits.
+        v must be pre-multiplied by the factor implied by the suffix
+        """
+        if v < 10.0:
+            res = "{:.2f}".format(v)
+        elif v < 100.0:
+            res = "{:.1f}".format(v)
+        else:  # Should only happen if v < 1000
+            res = str(int(round(v)))
+        # Avoid appending whitespace if there is no suffix
+        return "{0} {1}".format(res, suffix) if suffix else res
+
 
 # Initialize global instance
 Parser.instance = Parser()
 
 
-def _formatWithSuffix(v, suffix=""):
-    """
-    Format a given value with a given suffix.
-    This helper function formats the value to 3 visible digits.
-    v must be pre-multiplied by the factor implied by the suffix
-    """
-    if v < 10.0:
-        res = "{:.2f}".format(v)
-    elif v < 100.0:
-        res = "{:.1f}".format(v)
-    else:  # Should only happen if v < 1000
-        res = str(int(round(v)))
-    # Avoid appending whitespace if there is no suffix
-    return "{0} {1}".format(res, suffix) if suffix else res
-
-
-def normalize_engineer_notation(s, encoding="utf8"):
+def parse(s, encoding="utf8"):
     return Parser.instance.normalize(s)
 
 
-def format_value(v, unit=""):
-    return Parser.instance.format(v, unit)
+def format_simple(v, unit_symbol=""):
+    return Parser.instance.format(v, unit_symbol)
 
 
-def normalize_engineer_notation_safe(v, unit=""):
-    return Parser.instance.safe_normalize(v, unit)
+def format_verbose(v, unit_symbol=""):
+    return "{0} ({1} {2})".format(Parser.instance.format(v, unit_symbol),
+                                  v, unit_symbol)
 
 
-def normalize_numeric(v):
-    return Parser.instance.normalize_numeric(v)
-
-
-def auto_format(v, *args, **kwargs):
-    return Parser.instance.auto_format(v, *args, **kwargs)

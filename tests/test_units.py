@@ -69,7 +69,7 @@ class UnitsTestCase(unittest.TestCase):
         self.assertEqual(0.002, pyspice_u.value)
 
     def test99_basic_units(self):
-        r = units.normalize_engineer_notation('1k')
+        r = units.parse('1k')
         self.assertEqual(r[0], 1000)
 
 

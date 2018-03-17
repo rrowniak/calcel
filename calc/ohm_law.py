@@ -2,19 +2,46 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-from calc.core import units
+from core import units
+from core.units import AllUnits as U
 
 
-def calc_I(r, v):
-    return v / r
+def calc_i(u1, u2):
+    if u1[1] == U.V:
+        v = u1
+        r = u2
+    else:
+        v = u2
+        r = u1
+    return v[0] / r[0], U.A
 
 
-def calc_R(v, i):
-    return v / i
+def calc_r(u1, u2):
+    if u1[1] == U.V:
+        v = u1
+        i = u2
+    else:
+        v = u2
+        i = u1
+    return v[0] / i[0], U.R
 
 
-def calc_V(i, r):
-    return i * r
+def calc_v(i, r):
+    return i[0] * r[0], U.V
+
+
+SELECTOR = {
+    (U.R, U.V): calc_i,
+    (U.V, U.R): calc_i,
+    (U.V, U.A): calc_r,
+    (U.A, U.V): calc_r,
+    (U.A, U.R): calc_v,
+    (U.R, U.A): calc_v
+}
+
+
+def play(u1, u2):
+    return SELECTOR[(u1[1], u2[1])](u1, u2)
 
 
 if __name__ == "__main__":
@@ -26,4 +53,11 @@ For example: ohm_law.py 10mA 4k7
     """
     parser.add_argument("arg1", help='It can be any of these three units: V, A or Ω')
     parser.add_argument("arg2", help='It can be any of these three units: V, A or Ω')
-    parser.parse_args()
+    args = parser.parse_args()
+
+    arg1 = units.parse(args.arg1)
+    arg2 = units.parse(args.arg2)
+
+    res = play(arg1, arg2)
+    msg = units.format_verbose(res[0], res[1])
+    print(msg)
