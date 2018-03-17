@@ -1,3 +1,7 @@
+* Install python3: sudo apt-get install python3-all
+* Install pip3: sudo apt-get install python3-pip
+* Install numpy for python3: sudo python3 -m pip install numpy
+* Install pyspice: sudo python3 -m pip install pyspice
 1. Download source code of Ngspice library from  https://git.code.sf.net/p/ngspice/ngspice 
   * install flex compiler
   * unpack it and run ./autogen.sh
