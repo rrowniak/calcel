@@ -1,0 +1,9 @@
+1. Download source code of Ngspice library from  https://git.code.sf.net/p/ngspice/ngspice 
+  * install flex compiler
+  * unpack it and run ./autogen.sh
+  * run ./configure --with-ngshared (./configure --prefix=/usr/local --enable-xspice --disable-debug --enable-cider --with-readline=yes --enable-openmp)
+  * run make -j7
+  * run sudo make install
+ 2. Download pyspice library through pip3
+ 3. sudo apt-get install python3-tk
+ 
