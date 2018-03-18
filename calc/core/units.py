@@ -26,7 +26,7 @@ from PySpice.Unit import *
 class AllUnits(object):
     F = 'F'
     A = 'A'
-    R = 'R'
+    R = 'Ω'
     W = 'W'
     H = 'H'
     C = 'C'
@@ -41,6 +41,18 @@ class AllUnits(object):
     PYSPICE_UNIT_MAP = {'F': u_F, 'A': u_A, 'Ω': u_Ohm, 'Ohm': u_Ohm, 'R': u_Ohm,
                         'W': u_W, 'H': u_H, 'C': u_C, 'K': u_K, 'Hz': u_Hz, 'V': u_V,
                         'J': u_J, 'S': u_S}
+
+    @staticmethod
+    def convert_to_canonical(v):
+        n = v[0]
+        u = v[1]
+
+        for same_units in AllUnits.UNITS:
+            if u in same_units:
+                u = same_units[0]
+                break
+
+        return n, u
 
 
 class Parser(object):

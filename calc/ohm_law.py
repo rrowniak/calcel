@@ -41,6 +41,8 @@ SELECTOR = {
 
 
 def play(u1, u2):
+    u1 = U.convert_to_canonical(u1)
+    u2 = U.convert_to_canonical(u2)
     return SELECTOR[(u1[1], u2[1])](u1, u2)
 
 
