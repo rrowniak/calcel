@@ -46,6 +46,17 @@ def play(u1, u2):
     return SELECTOR[(u1[1], u2[1])](u1, u2)
 
 
+def calc_power(*arg):
+    for a in arg:
+        if a[1] == U.A:
+            i = a[0]
+            continue
+        if a[1] == U.V:
+            u = a[0]
+            continue
+    return u * i, U.W
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.description = """
@@ -63,3 +74,8 @@ For example: ohm_law.py 10mA 4k7
     res = play(arg1, arg2)
     msg = units.format_verbose(res[0], res[1])
     print(msg)
+    # calc power dissipation
+    p = calc_power(arg1, arg2, res)
+    msg = units.format_verbose(p[0], p[1])
+    print('Power dissipation: {0}'.format(msg))
+
